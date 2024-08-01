@@ -1,0 +1,8 @@
+---
+jenkins_url: "http://localhost:8080"
+jenkins_home: "/var/lib/jenkins"
+jenkins_admin_username: "admin"
+jenkins_admin_password: "{{ admin_password.stdout }}"
+jenkins_user: "jenkins"
+jenkins_user_password: "jenkins"
+jenkins_user_home: "/home/jenkins"
