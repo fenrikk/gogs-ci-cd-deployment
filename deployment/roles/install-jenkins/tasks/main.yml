@@ -1,0 +1,46 @@
+---
+- name: Install system dependencies
+  apt:
+    name:
+      - gnupg
+    state: present
+    update_cache: yes
+
+- name: Add Jenkins repository key
+  apt_key:
+    url: "{{ repository_key_url }}"
+    state: present
+
+- name: Add Jenkins repository
+  shell: |
+    echo "deb [trusted=yes] {{ repository_url }}" | sudo tee /etc/apt/sources.list.d/jenkins.list
+
+- name: Install Jenkins dependencies
+  apt:
+    name: 
+      - openjdk-17-jre
+      - jenkins
+      - systemctl
+    state: present
+    update_cache: yes
+
+- name: Start Jenkins service
+  systemd:
+    name: jenkins
+    state: started
+    enabled: true
+
+- name: Wait for Jenkins to start
+  wait_for:
+    path: "{{ admin_key_path }}"
+    state: present
+    timeout: 300
+
+- name: Get initial admin password
+  command: cat {{ admin_key_path }}
+  register: admin_password
+  changed_when: false
+
+- name: Display initial admin password
+  debug:
+    var: admin_password.stdout

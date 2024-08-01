@@ -1,0 +1,4 @@
+---
+repository_key_url: "https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key"
+repository_url: "https://pkg.jenkins.io/debian-stable binary/"
+admin_key_path: /var/lib/jenkins/secrets/initialAdminPassword

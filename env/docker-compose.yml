@@ -1,0 +1,41 @@
+# SSH ports declaration
+# jenkins: 8000
+# jenkinsSlave: 8001
+# sonarDatabase: 8002
+# sonar: 8003
+# sonatypeDatabase: 8004
+# sonatype: 8005
+
+version: '3'
+services:
+
+  jenkins:
+    image: ubuntu-sshd-with-sudo:latest
+    container_name: jenkins
+    ports:
+      - "8000:22"
+      - "8080:8080"
+    expose:
+      - "50000"
+    environment:
+      - SSH_USERNAME=jenkinsSSH
+      - PASSWORD=jenkinsSSH
+      - AUTHORIZED_KEYS=${SSH_PUBLIC_KEY}
+    networks:
+      - internal_network
+
+  # jenkinsSlave:
+  #   image: ubuntu-sshd-with-sudo:latest
+  #   container_name: jenkinsSlave
+  #   ports:
+  #     - "8001:22"
+  #   environment:
+  #     - SSH_USERNAME=jenkinsSlaveSSH
+  #     - PASSWORD=jenkinsSlaveSSH
+  #     - AUTHORIZED_KEYS=${SSH_PUBLIC_KEY}
+  #   networks:
+  #     - internal_network
+
+networks:
+  internal_network:
+    driver: bridge
