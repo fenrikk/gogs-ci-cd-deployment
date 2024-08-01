@@ -1,0 +1,7 @@
+---
+- name: Setup jenkins server
+  hosts: jenkins
+  become: true
+  gather_facts: true
+  roles:
+    - install-jenkins
