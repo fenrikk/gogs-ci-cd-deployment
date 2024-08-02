@@ -1,0 +1,20 @@
+## DO NOT EDIT - CUSTOMIZATIONS BELONG IN $data-dir/etc/nexus.properties
+##
+# Jetty section
+application-port=8081
+application-host=0.0.0.0
+nexus-args=${jetty.etc}/jetty.xml,${jetty.etc}/jetty-http.xml,${jetty.etc}/jetty-requestlog.xml
+nexus-context-path=/
+
+# Nexus section
+nexus-edition=nexus-pro-edition
+nexus-features=\
+ nexus-pro-feature
+nexus.hazelcast.discovery.isEnabled=true
+
+# PostgreSQL configuration
+nexus.datastore.enabled=true
+nexus.datastore.nexus.type=jdbc
+nexus.datastore.nexus.jdbc.url=jdbc:postgresql://{{ nexus_database_ip }}:{{ nexus_database_port }}/{{ nexus_db_shema_name }}
+nexus.datastore.nexus.jdbc.username={{ nexus_db_username }}
+nexus.datastore.nexus.jdbc.password={{ nexus_db_password }}
