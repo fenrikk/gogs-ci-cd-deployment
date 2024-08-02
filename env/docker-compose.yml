@@ -36,6 +36,20 @@ services:
     networks:
       - internal_network
 
+  sonarDatabase:
+    image: ubuntu-sshd-with-sudo:latest
+    container_name: sonarDatabase
+    ports:
+      - "8002:22"
+    expose: 
+      - "5432"
+    environment:
+      - SSH_USERNAME=sonarDatabaseSSH
+      - PASSWORD=sonarDatabaseSSH
+      - AUTHORIZED_KEYS=${SSH_PUBLIC_KEY}
+    networks:
+      - internal_network
+      
 networks:
   internal_network:
     driver: bridge
