@@ -1,13 +1,4 @@
 ---
-- name: Wait for Jenkins to start up
-  uri:
-    url: "{{ jenkins_url }}/login"
-    status_code: 200
-  register: result
-  until: result.status == 200
-  retries: 60
-  delay: 5
-
 - name: Download Jenkins CLI
   get_url:
     url: "{{ jenkins_url }}/jnlpJars/jenkins-cli.jar"
@@ -41,13 +32,11 @@
     owner: jenkins
     group: jenkins
     mode: '0644'
-  notify: Restart Jenkins
 
 - name: Disable initial setup wizard
   copy:
     content: "2.0"
     dest: "{{ jenkins_home }}/jenkins.install.InstallUtil.lastExecVersion"
-  notify: Restart Jenkins
 
 - name: Disable upgrade wizard
   copy:

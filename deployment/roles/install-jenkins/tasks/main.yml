@@ -30,12 +30,6 @@
     state: started
     enabled: true
 
-- name: Wait for Jenkins to start
-  wait_for:
-    path: "{{ admin_key_path }}"
-    state: present
-    timeout: 300
-
 - name: Get initial admin password
   command: cat {{ admin_key_path }}
   register: admin_password

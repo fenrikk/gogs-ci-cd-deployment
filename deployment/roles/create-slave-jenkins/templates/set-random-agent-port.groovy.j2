@@ -1,0 +1,12 @@
+#!groovy
+import jenkins.model.Jenkins
+import jenkins.security.s2m.AdminWhitelistRule
+import hudson.security.csrf.DefaultCrumbIssuer
+import jenkins.model.JenkinsLocationConfiguration
+
+def instance = Jenkins.getInstance()
+instance.setSlaveAgentPort(0)
+instance.save()
+def port = instance.getSlaveAgentPort()
+
+return [message: "Inbound TCP agent port set to random. Current port: ${port}"]

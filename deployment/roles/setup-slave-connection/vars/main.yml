@@ -1,0 +1,5 @@
+---
+jenkins_master_ip: "jenkins"
+jenkins_master_port: "8080"
+jenkins_slave_workdir: /jenkins
+jenkins_slave_user: jenkinsSlaveSSH

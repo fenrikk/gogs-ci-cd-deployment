@@ -1,0 +1,9 @@
+---
+jenkins_url: "http://localhost:8080"
+jenkins_username: "jenkins"
+jenkins_password: "jenkins"
+node_name: "main"
+node_description: "Main slave node"
+node_executors: 1
+node_remote_root: "/jenkins"
+node_labels: "slave"

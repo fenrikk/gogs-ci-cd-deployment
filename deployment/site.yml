@@ -6,3 +6,16 @@
   roles:
     - install-jenkins
     - setup-jenkins
+
+- name: Create slave node
+  hosts: jenkins
+  gather_facts: true
+  roles:
+    - create-slave-jenkins
+
+- name: Setup slave node
+  hosts: jenkinsSlave
+  become: true
+  gather_facts: true
+  roles:
+    - setup-slave-connection
