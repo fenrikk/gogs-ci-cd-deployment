@@ -35,3 +35,19 @@
   gather_facts: true
   roles:
     - setup-sonar
+
+- name: Setup nexus database
+  hosts: nexusDatabase
+  become: true
+  gather_facts: true
+  roles:
+    - setup-database
+  vars_files:
+    - roles/setup-database/vars/nexus.yml
+
+- name: Setup nexus
+  hosts: nexus
+  become: true
+  gather_facts: true
+  roles:
+    - setup-nexus

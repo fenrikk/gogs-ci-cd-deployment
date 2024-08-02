@@ -1,0 +1,13 @@
+---
+nexus_version: "3.70.1-02"
+nexus_java_version: "17"
+nexus_download_url: "https://download.sonatype.com/nexus/3/nexus-{{ nexus_version }}-java{{ nexus_java_version }}-unix.tar.gz"
+nexus_install_dir: "/opt/nexus"
+nexus_work_dir: "/opt/sonatype-work"
+nexus_user: "nexus"
+nexus_group: "nexus"
+nexus_database_ip: "nexusDatabase" 
+nexus_database_port: "5432"
+nexus_db_shema_name: "nexus"
+nexus_db_username: "nexus"
+nexus_db_password: "nexus"

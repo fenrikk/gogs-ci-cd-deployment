@@ -63,6 +63,34 @@ services:
       - AUTHORIZED_KEYS=${SSH_PUBLIC_KEY}
     networks:
       - internal_network
+
+  nexusDatabase:
+    image: ubuntu-sshd-with-sudo:latest
+    container_name: nexusDatabase
+    ports:
+      - "8004:22"
+    expose:
+      - "5432"
+    environment:
+      - SSH_USERNAME=nexusDatabaseSSH
+      - PASSWORD=nexusDatabaseSSH
+      - AUTHORIZED_KEYS=${SSH_PUBLIC_KEY}
+    networks:
+      - internal_network
+
+  nexus:
+    image: ubuntu-sshd-with-sudo:latest
+    container_name: nexus
+    ports:
+      - "8005:22"
+      - "8081:8081"
+    environment:
+      - SSH_USERNAME=nexusSSH
+      - PASSWORD=nexusSSH
+      - AUTHORIZED_KEYS=${SSH_PUBLIC_KEY}
+    networks:
+      - internal_network
+
 networks:
   internal_network:
     driver: bridge

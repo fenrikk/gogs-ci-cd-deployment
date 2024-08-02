@@ -1,0 +1,79 @@
+---
+- name: Install dependencies
+  apt:
+    name: 
+      - systemctl
+      - openjdk-17-jre
+    state: present
+    update_cache: true
+
+- name: Download Nexus
+  get_url:
+    url: "{{ nexus_download_url }}"
+    dest: "/tmp/nexus-{{ nexus_version }}-unix.tar.gz"
+
+- name: Extract Nexus archive
+  unarchive:
+    src: "/tmp/nexus-{{ nexus_version }}-unix.tar.gz"
+    dest: "/opt"
+    remote_src: true
+
+- name: Rename Nexus directory
+  command: "mv /opt/nexus-{{ nexus_version }} {{ nexus_install_dir }}"
+  args:
+    creates: "{{ nexus_install_dir }}"
+
+- name: Create Sonatype work directory
+  file:
+    path: "{{ nexus_work_dir }}"
+    state: directory
+  
+- name: Create Nexus user
+  user:
+    name: "{{ nexus_user }}"
+    comment: "Nexus"
+    create_home: true
+    shell: /usr/bin/bash
+    password_lock: true
+
+- name: Set ownership for Nexus directories
+  file:
+    path: "{{ item }}"
+    owner: "{{ nexus_user }}"
+    group: "{{ nexus_group }}"
+    recurse: true
+  loop:
+    - "{{ nexus_install_dir }}"
+    - "{{ nexus_work_dir }}"
+
+- name: Configure Nexus to use PostgreSQL
+  template:
+    src: nexus-default.properties.j2
+    dest: "{{ nexus_install_dir }}/etc/nexus-default.properties"
+
+- name: Create Nexus systemd service file
+  template:
+    src: nexus.service.j2
+    dest: /etc/systemd/system/nexus.service
+  
+- name: Enable and start Nexus service
+  systemd:
+    name: nexus
+    enabled: yes
+    state: started
+    daemon_reload: yes
+
+- name: Wait for admin password file to be created
+  wait_for:
+    path: "{{ nexus_work_dir }}/nexus3/admin.password"
+    state: present
+    timeout: 300
+
+- name: Read admin password
+  command: cat {{ nexus_work_dir }}/nexus3/admin.password
+  register: admin_password
+  changed_when: false
+
+- name: Display admin password
+  debug:
+    msg: "Nexus admin password: {{ admin_password.stdout }}"
