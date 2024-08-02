@@ -1,21 +1,30 @@
 ---
-- name: Setup jenkins server
-  hosts: jenkins
+# - name: Setup jenkins server
+#   hosts: jenkins
+#   become: true
+#   gather_facts: true
+#   roles:
+#     - install-jenkins
+#     - setup-jenkins
+
+# - name: Create slave node
+#   hosts: jenkins
+#   gather_facts: true
+#   roles:
+#     - create-slave-jenkins
+
+# - name: Setup slave node
+#   hosts: jenkinsSlave
+#   become: true
+#   gather_facts: true
+#   roles:
+#     - setup-slave-connection
+
+- name: Setup sonar database
+  hosts: sonarDatabase
   become: true
   gather_facts: true
   roles:
-    - install-jenkins
-    - setup-jenkins
-
-- name: Create slave node
-  hosts: jenkins
-  gather_facts: true
-  roles:
-    - create-slave-jenkins
-
-- name: Setup slave node
-  hosts: jenkinsSlave
-  become: true
-  gather_facts: true
-  roles:
-    - setup-slave-connection
+    - setup-database
+  vars_files:
+    - roles/setup-database/vars/sonar.yml
