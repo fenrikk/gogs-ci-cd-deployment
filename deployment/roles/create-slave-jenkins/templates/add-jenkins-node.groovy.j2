@@ -1,0 +1,15 @@
+#!groovy
+import hudson.model.*
+import hudson.slaves.*
+import jenkins.model.Jenkins
+import jenkins.slaves.JnlpSlaveAgentProtocol
+
+def jenkins = Jenkins.instance
+def launcher = new JNLPLauncher(true)
+def node = new DumbSlave("{{ node_name }}", "{{ node_description }}", "{{ node_remote_root }}", "{{ node_executors }}", Node.Mode.NORMAL, "{{ node_labels }}", launcher, new RetentionStrategy.Always(), new LinkedList())
+jenkins.addNode(node)
+def computer = node.toComputer()
+def channel = computer.getChannel()
+def token = JnlpSlaveAgentProtocol.SLAVE_SECRET.mac(node.name)
+
+return [node: node.name, token: token]

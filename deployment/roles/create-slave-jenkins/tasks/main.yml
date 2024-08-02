@@ -1,0 +1,26 @@
+---
+- name: Set random TCP port for inbound agents
+  community.general.jenkins_script:
+    script: "{{ lookup('template', 'templates/set-random-agent-port.groovy.j2') }}"
+    url: "{{ jenkins_url }}"
+    user: "{{ jenkins_username }}"
+    password: "{{ jenkins_password }}"
+  register: jenkins_port_result
+
+- name: Add Jenkins slave node and get token
+  community.general.jenkins_script:
+    script: "{{ lookup('template', 'templates/add-jenkins-node.groovy.j2') }}"
+    url: "{{ jenkins_url }}"
+    user: "{{ jenkins_username }}"
+    password: "{{ jenkins_password }}"
+  register: jenkins_node_result
+
+- name: Extract Jenkins node token
+  set_fact:
+    jenkins_node_token: "{{ jenkins_node_result.output | regex_search('token=([^,}]+)', '\\1') | first }}"
+
+- name: Set token as environment variable on jenkinsSlave
+  ansible.builtin.set_fact:
+    jenkins_node_token_env: "{{ jenkins_node_token }}"
+  delegate_to: jenkinsSlave
+  run_once: true

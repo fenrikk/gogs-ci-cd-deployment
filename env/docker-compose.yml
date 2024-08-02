@@ -24,17 +24,17 @@ services:
     networks:
       - internal_network
 
-  # jenkinsSlave:
-  #   image: ubuntu-sshd-with-sudo:latest
-  #   container_name: jenkinsSlave
-  #   ports:
-  #     - "8001:22"
-  #   environment:
-  #     - SSH_USERNAME=jenkinsSlaveSSH
-  #     - PASSWORD=jenkinsSlaveSSH
-  #     - AUTHORIZED_KEYS=${SSH_PUBLIC_KEY}
-  #   networks:
-  #     - internal_network
+  jenkinsSlave:
+    image: ubuntu-sshd-with-sudo:latest
+    container_name: jenkinsSlave
+    ports:
+      - "8001:22"
+    environment:
+      - SSH_USERNAME=jenkinsSlaveSSH
+      - PASSWORD=jenkinsSlaveSSH
+      - AUTHORIZED_KEYS=${SSH_PUBLIC_KEY}
+    networks:
+      - internal_network
 
 networks:
   internal_network:

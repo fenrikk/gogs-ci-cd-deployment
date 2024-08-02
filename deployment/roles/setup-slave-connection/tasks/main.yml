@@ -1,0 +1,36 @@
+---
+- name: Install dependencies
+  apt:
+    name:
+      - curl
+      - openjdk-17-jre
+    state: present
+    update_cache: yes
+
+- name: Create Jenkins Slave work directory
+  file:
+    path: "{{ jenkins_slave_workdir }}"
+    state: directory
+    owner: "{{ jenkins_slave_user }}"
+    group: "{{ jenkins_slave_user }}"
+    mode: '0755'
+
+- name: Download agent.jar
+  get_url:
+    url: "http://{{ jenkins_master_ip }}:{{ jenkins_master_port }}/jnlpJars/agent.jar"
+    dest: "{{ jenkins_slave_workdir }}/agent.jar"
+
+- name: Read Jenkins node token from environment variable
+  set_fact:
+    jenkins_node_token: "{{ hostvars['jenkins']['jenkins_node_token_env'] }}"
+
+- name: Start Jenkins Slave in background
+  shell: |
+    nohup java -jar {{ jenkins_slave_workdir }}/agent.jar \
+    -url http://{{ jenkins_master_ip }}:{{ jenkins_master_port }}/ \
+    -secret {{ jenkins_node_token }} \
+    -name main \
+    -workDir "{{ jenkins_slave_workdir }}" > /dev/null 2>&1 &
+  async: 1
+  poll: 0
+
