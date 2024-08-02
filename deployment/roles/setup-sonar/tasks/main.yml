@@ -1,0 +1,69 @@
+---
+- name: Install system dependencies
+  apt:
+    name:
+      - systemctl
+      - openjdk-17-jre   
+      - unzip 
+    state: present
+    update_cache: yes
+
+- name: Download SonarQube
+  get_url:
+    url: "{{ sonarqube_download_url }}"
+    dest: "/tmp/sonarqube-{{ sonarqube_version }}.zip"
+
+- name: Unzip SonarQube
+  unarchive:
+    src: "/tmp/sonarqube-{{ sonarqube_version }}.zip"
+    dest: "/tmp"
+    remote_src: yes
+
+- name: Move SonarQube to install directory
+  command: "mv /tmp/sonarqube-{{ sonarqube_version }} {{ sonarqube_install_dir }}"
+
+- name: Create sonarqube user
+  user:
+    name: sonarqube
+    system: yes
+
+- name: Set ownership of SonarQube directory
+  file:
+    path: "{{ sonarqube_install_dir }}"
+    owner: sonarqube
+    group: sonarqube
+    recurse: yes
+
+- name: Configure SonarQube
+  lineinfile:
+    path: "{{ sonarqube_install_dir }}/conf/sonar.properties"
+    regexp: "^{{ item.key }}"
+    line: "{{ item.key }}={{ item.value }}"
+  loop:
+    - { key: sonar.jdbc.username, value: "{{ sonarqube_db_username }}" }
+    - { key: sonar.jdbc.password, value: "{{ sonarqube_db_password }}" }
+    - { key: sonar.jdbc.url, value: "{{ sonarqube_db_url }}" }
+    - { key: sonar.web.javaAdditionalOpts, value: -server }
+
+- name: Create SonarQube start script
+  template:
+    src: sonar.sh.j2
+    dest: "{{ sonarqube_install_dir }}/bin/sonar.sh"
+    mode: '0755'
+
+- name: Create SonarQube systemd service
+  template:
+    src: sonarqube.service.j2
+    dest: /etc/systemd/system/sonarqube.service
+
+- name: Start SonarQube service
+  systemd:
+    name: sonarqube
+    state: started
+    daemon_reload: yes
+    enabled: yes
+
+- name: Clean up downloaded zip file
+  file:
+    path: "/tmp/sonarqube-{{ sonarqube_version }}.zip"
+    state: absent
