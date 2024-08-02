@@ -1,0 +1,11 @@
+#!/bin/bash
+
+SONAR_HOME="{{ sonarqube_install_dir }}"
+JAVA_CMD="java"
+SONAR_JAVA_PATH="$SONAR_HOME/lib/sonar-application-{{ sonarqube_version }}.jar"
+
+exec "$JAVA_CMD" -jar "$SONAR_JAVA_PATH" \
+    -Dsonar.wrapped=true \
+    -Dsonar.web.javaAdditionalOpts= \
+    -Dsonar.search.javaAdditionalOpts= \
+    -Dsonar.ce.javaAdditionalOpts=
