@@ -18,7 +18,7 @@
   become: true
   gather_facts: true
   roles:
-    - setup-slave-connection
+    - setup-slave
 
 - name: Setup sonar database
   hosts: sonarDatabase

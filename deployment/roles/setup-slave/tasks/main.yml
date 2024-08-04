@@ -4,6 +4,8 @@
     name:
       - curl
       - openjdk-17-jre
+      - git
+      - nodejs
     state: present
     update_cache: yes
 
