@@ -1,4 +1,13 @@
 ---
+- name: Check if Nexus is already installed
+  stat:
+    path: "{{ nexus_install_dir }}"
+  register: nexus_install_check
+
+- name: Set fact for Nexus installation status
+  set_fact:
+    nexus_already_installed: "{{ nexus_install_check.stat.exists }}"
+
 - name: Install dependencies
   apt:
     name: 
@@ -11,22 +20,26 @@
   get_url:
     url: "{{ nexus_download_url }}"
     dest: "/tmp/nexus-{{ nexus_version }}-unix.tar.gz"
+  when: not nexus_already_installed
 
 - name: Extract Nexus archive
   unarchive:
     src: "/tmp/nexus-{{ nexus_version }}-unix.tar.gz"
     dest: "/opt"
     remote_src: true
+  when: not nexus_already_installed
 
 - name: Rename Nexus directory
   command: "mv /opt/nexus-{{ nexus_version }} {{ nexus_install_dir }}"
   args:
     creates: "{{ nexus_install_dir }}"
+  when: not nexus_already_installed
 
 - name: Create Sonatype work directory
   file:
     path: "{{ nexus_work_dir }}"
     state: directory
+  when: not nexus_already_installed
   
 - name: Create Nexus user
   user:
@@ -35,6 +48,7 @@
     create_home: true
     shell: /usr/bin/bash
     password_lock: true
+  when: not nexus_already_installed
 
 - name: Set ownership for Nexus directories
   file:
@@ -68,12 +82,15 @@
     path: "{{ nexus_work_dir }}/nexus3/admin.password"
     state: present
     timeout: 300
+  when: not nexus_already_installed
 
 - name: Read admin password
   command: cat {{ nexus_work_dir }}/nexus3/admin.password
   register: admin_password
   changed_when: false
+  when: not nexus_already_installed
 
 - name: Display admin password
   debug:
     msg: "Nexus admin password: {{ admin_password.stdout }}"
+  when: not nexus_already_installed

@@ -1,4 +1,13 @@
 ---
+- name: Check if Sonar is already installed
+  stat:
+    path: "{{ sonarqube_install_dir }}"
+  register: sonar_install_check
+
+- name: Set fact for Sonar installation status
+  set_fact:
+    sonar_already_installed: "{{ sonar_install_check.stat.exists }}"
+
 - name: Install system dependencies
   apt:
     name:
@@ -12,15 +21,18 @@
   get_url:
     url: "{{ sonarqube_download_url }}"
     dest: "/tmp/sonarqube-{{ sonarqube_version }}.zip"
+  when: not sonar_already_installed
 
 - name: Unzip SonarQube
   unarchive:
     src: "/tmp/sonarqube-{{ sonarqube_version }}.zip"
     dest: "/tmp"
     remote_src: yes
+  when: not sonar_already_installed
 
 - name: Move SonarQube to install directory
   command: "mv /tmp/sonarqube-{{ sonarqube_version }} {{ sonarqube_install_dir }}"
+  when: not sonar_already_installed
 
 - name: Create sonarqube user
   user:
