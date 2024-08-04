@@ -6,6 +6,7 @@
       - openjdk-17-jre
       - git
       - nodejs
+      - gcc
     state: present
     update_cache: yes
 
